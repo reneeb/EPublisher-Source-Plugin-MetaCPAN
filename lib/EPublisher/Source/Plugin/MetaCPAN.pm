@@ -3,6 +3,7 @@ package EPublisher::Source::Plugin::MetaCPAN;
 use strict;
 use warnings;
 
+use File::Basename;
 use MetaCPAN::API;
 
 use EPublisher::Source::Base;
@@ -13,14 +14,21 @@ our @ISA = qw( EPublisher::Source::Base );
 our $VERSION = 0.01;
 
 sub load_source{
-    my ($self, $options) = @_;
+    my ($self) = @_;
+
+    my $options = $self->_config;
     
     return '' unless $options->{module};
 
     my $module = $options->{module};
     my $mcpan  = MetaCPAN::API->new;
 
-    my $module_result = $mcpan->fetch( '/release/' . $module );
+use Data::Dumper;
+warn $mcpan;
+
+    my $module_result = $mcpan->fetch( 'release/' . $module );
+
+warn Dumper $module_result;
 
     my $release  = sprintf "%s-%s", $module, $module_result->{version};
     my $manifest = $mcpan->source(
@@ -29,9 +37,14 @@ sub load_source{
         path    => 'MANIFEST',
     );
 
+warn Dumper $manifest;
+
     my @files     = split /\n/, $manifest;
     my @pod_files = grep{ /\.p(?:od|m)\z/ }@files;
     my @pod;
+
+warn Dumper \@files;
+warn Dumper \@pod_files;
 
     for my $file ( @pod_files ) {
 
@@ -41,12 +54,20 @@ sub load_source{
             path           => $file,
             'content-type' => 'text/x-pod',
         );
+warn Dumper $result;
 
         next if $result eq '{}';
         
         # check if $result is always only the Pod
         #push @pod, extract_pod_from_code( $result );
-        push @pod, $result;
+        my $filename = basename $file;
+        my $title    = $file;
+
+        $title =~ s{lib/}{};
+        $title =~ s{\.p(?:m|od)\z}{};
+        $title =~ s{/}{::}g;
+ 
+        push @pod, { pod => $result, filename => $filename, title => $title };
     }
     
     return @pod;
