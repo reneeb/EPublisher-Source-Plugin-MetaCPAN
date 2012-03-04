@@ -13,6 +13,7 @@ our @ISA = qw( EPublisher::Source::Base );
 
 our $VERSION = 0.01;
 
+# implementing the interface to EPublisher::Source::Base
 sub load_source{
     my ($self) = @_;
 
@@ -20,22 +21,30 @@ sub load_source{
     
     return '' unless $options->{module};
 
-    my $module = $options->{module};
+    my $module = $options->{module};    # the name of the CPAN-module
     my $mcpan  = MetaCPAN::API->new;
 
+    # fetiching the requested module from meatcpan
     my $module_result = $mcpan->fetch( 'release/' . $module );
 
+    # this produces something like e.g. "EPublisher-0.6"
     my $release  = sprintf "%s-%s", $module, $module_result->{version};
+
+    # get the manifest with module-author and modulename-moduleversion
     my $manifest = $mcpan->source(
         author  => $module_result->{author},
         release => $release,
         path    => 'MANIFEST',
     );
 
+    # make a list from all possible POD-files in the lib directory
     my @files     = split /\n/, $manifest;
     my @pod_files = grep{ /^lib\/.*\.p(?:od|m)\z/ }@files;
+
+    # here whe store POD if we find some later on
     my @pod;
 
+    # look for POD
     for my $file ( @pod_files ) {
 
         my $result = $mcpan->pod(
@@ -59,6 +68,7 @@ sub load_source{
         push @pod, { pod => $result, filename => $filename, title => $title };
     }
     
+    # voilà
     return @pod;
 }
 
@@ -84,13 +94,13 @@ reads the URL
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2011 Renee Baecker, all rights reserved.
+Copyright 2012 Renee Baecker and Boris Daeppen, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of Artistic License 2.0.
 
 =head1 AUTHOR
 
-Renee Baecker (E<lt>module@renee-baecker.deE<gt>)
+Renee Baecker (E<lt>module@renee-baecker.deE<gt>), Boris Daeppen (E<lt>boris_daeppen@bluewin.chE<gt>)
 
 =cut
