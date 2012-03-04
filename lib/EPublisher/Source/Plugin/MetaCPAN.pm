@@ -23,12 +23,7 @@ sub load_source{
     my $module = $options->{module};
     my $mcpan  = MetaCPAN::API->new;
 
-use Data::Dumper;
-warn $mcpan;
-
     my $module_result = $mcpan->fetch( 'release/' . $module );
-
-warn Dumper $module_result;
 
     my $release  = sprintf "%s-%s", $module, $module_result->{version};
     my $manifest = $mcpan->source(
@@ -37,14 +32,9 @@ warn Dumper $module_result;
         path    => 'MANIFEST',
     );
 
-warn Dumper $manifest;
-
     my @files     = split /\n/, $manifest;
     my @pod_files = grep{ /^lib\/.*\.p(?:od|m)\z/ }@files;
     my @pod;
-
-warn Dumper \@files;
-warn Dumper \@pod_files;
 
     for my $file ( @pod_files ) {
 
@@ -54,7 +44,6 @@ warn Dumper \@pod_files;
             path           => $file,
             'content-type' => 'text/x-pod',
         );
-warn Dumper $result;
 
         next if $result eq '{}';
         
