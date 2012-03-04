@@ -40,7 +40,7 @@ warn Dumper $module_result;
 warn Dumper $manifest;
 
     my @files     = split /\n/, $manifest;
-    my @pod_files = grep{ /\.p(?:od|m)\z/ }@files;
+    my @pod_files = grep{ /^lib\/.*\.p(?:od|m)\z/ }@files;
     my @pod;
 
 warn Dumper \@files;
