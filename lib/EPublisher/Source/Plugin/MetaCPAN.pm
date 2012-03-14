@@ -24,7 +24,7 @@ sub load_source{
     my $module = $options->{module};    # the name of the CPAN-module
     my $mcpan  = MetaCPAN::API->new;
 
-    # fetiching the requested module from meatcpan
+    # fetching the requested module from metacpan
     my $module_result = $mcpan->fetch( 'release/' . $module );
 
     # this produces something like e.g. "EPublisher-0.6"
@@ -47,14 +47,28 @@ sub load_source{
     # look for POD
     for my $file ( @pod_files ) {
 
-        my $result = $mcpan->pod(
+        # the call below ($mcpan->pod()) fails if there is no POD in a
+        # module so this is why I filter all the modules. I check if they
+        # have any line BEGINNING with '=head1' ore similar
+        my $source = $mcpan->source(
             author         => $module_result->{author},
             release        => $release,
             path           => $file,
-            'content-type' => 'text/x-pod',
         );
+        # The Moose-Project made me write this filtering Regex, because
+        # they have .pm's without POD, and also with nonsense POD which
+        # still fails if you call $mcpan->pod
+        my $pod_src;
+        if ($source =~ /\n=(HEAD|Head|head)\d+/) {
+            $pod_src = $mcpan->pod(
+                author         => $module_result->{author},
+                release        => $release,
+                path           => $file,
+                'content-type' => 'text/x-pod',
+            );
 
-        next if $result eq '{}';
+            next if $pod_src eq '{}';
+        }
         
         # check if $result is always only the Pod
         #push @pod, extract_pod_from_code( $result );
@@ -65,7 +79,7 @@ sub load_source{
         $title =~ s{\.p(?:m|od)\z}{};
         $title =~ s{/}{::}g;
  
-        push @pod, { pod => $result, filename => $filename, title => $title };
+        push @pod, { pod => $pod_src, filename => $filename, title => $title };
     }
     
     # voilà
