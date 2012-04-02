@@ -1,6 +1,10 @@
 Changes for EPublisher::Source::Plugin::MetaCPAN
 ================================================
 
-0.1 2012-03-19
-    + initial release
+0.11 2012-04-02
+    - fixed a bug in POD detection. (POD without "=head" is ignored)
+    - take possible comments in MANIFEST into account
+
+0.1  2012-03-19
+    - initial release
 
