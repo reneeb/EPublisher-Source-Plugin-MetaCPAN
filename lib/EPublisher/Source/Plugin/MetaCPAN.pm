@@ -131,15 +131,4 @@ EPublisher::Source::Plugin::MetaCPAN - MetaCPAN source plugin
 
 reads the URL 
 
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2012 Renee Baecker and Boris Daeppen, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify it
-under the terms of Artistic License 2.0.
-
-=head1 AUTHOR
-
-Renee Baecker (E<lt>module@renee-baecker.deE<gt>), Boris Daeppen (E<lt>boris_daeppen@bluewin.chE<gt>)
-
 =cut
