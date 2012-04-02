@@ -40,13 +40,13 @@ sub load_source{
     # make a list from all possible POD-files in the lib directory
     my @files     = split /\n/, $manifest;
     # some MANIFESTS (like POD::Parser) have comments after the filenames,
-    # so we match against \s instead of \z
+    # so we match against an optional \s instead of \z
     # the manifest, in POD::Parser in looks e.g. like this:
     #
     # lib/Pod/Usage.pm     -- The Pod::Usage module source
     # lib/Pod/Checker.pm   -- The Pod::Checker module source
     # lib/Pod/Find.pm      -- The Pod::Find module source
-    my @pod_files = grep{ /^lib\/.*\.p(?:od|m)\s/ }@files;
+    my @pod_files = grep{ /^lib\/.*\.p(?:od|m)\s?/ }@files;
 
     # here whe store POD if we find some later on
     my @pod;
@@ -86,6 +86,10 @@ sub load_source{
             );
 
             next if $pod_src eq '{}';
+        }
+        else {
+            # if there is no head we consider this POD unvalid
+            next;
         }
         
         # check if $result is always only the Pod
