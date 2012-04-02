@@ -39,13 +39,31 @@ sub load_source{
 
     # make a list from all possible POD-files in the lib directory
     my @files     = split /\n/, $manifest;
-    my @pod_files = grep{ /^lib\/.*\.p(?:od|m)\z/ }@files;
+    # some MANIFESTS (like POD::Parser) have comments after the filenames,
+    # so we match against \s instead of \z
+    # the manifest, in POD::Parser in looks e.g. like this:
+    #
+    # lib/Pod/Usage.pm     -- The Pod::Usage module source
+    # lib/Pod/Checker.pm   -- The Pod::Checker module source
+    # lib/Pod/Find.pm      -- The Pod::Find module source
+    my @pod_files = grep{ /^lib\/.*\.p(?:od|m)\s/ }@files;
 
     # here whe store POD if we find some later on
     my @pod;
 
     # look for POD
     for my $file ( @pod_files ) {
+
+        # we match the filename again, in case there are comments in
+        # the manifest, in POD::Parser in looks e.g. like this:
+        #
+        # lib/Pod/Usage.pm     -- The Pod::Usage module source
+        # lib/Pod/Checker.pm   -- The Pod::Checker module source
+        # lib/Pod/Find.pm      -- The Pod::Find module source
+        if ( $file =~ m/^(lib\/.*\.p(?:od|m))\s/) {
+            # throw away any comments!
+            $file = $1;
+        }
 
         # the call below ($mcpan->pod()) fails if there is no POD in a
         # module so this is why I filter all the modules. I check if they
