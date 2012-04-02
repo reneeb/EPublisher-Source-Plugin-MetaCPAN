@@ -11,7 +11,7 @@ use EPublisher::Utils::PPI qw(extract_pod_from_code);
 
 our @ISA = qw( EPublisher::Source::Base );
 
-our $VERSION = 0.1;
+our $VERSION = 0.11;
 
 # implementing the interface to EPublisher::Source::Base
 sub load_source{
@@ -46,7 +46,10 @@ sub load_source{
     # lib/Pod/Usage.pm     -- The Pod::Usage module source
     # lib/Pod/Checker.pm   -- The Pod::Checker module source
     # lib/Pod/Find.pm      -- The Pod::Find module source
-    my @pod_files = grep{ /^lib\/.*\.p(?:od|m)\s?/ }@files;
+    my @pod_files = grep{ /^lib\/.*\.p(?:od|m)\s?/ # all the POD in ./lib/
+                          or
+                          /^[^\/]*\.p(?:od|m)\s?/  # all the POD in ./
+                        }@files;
 
     # here whe store POD if we find some later on
     my @pod;
