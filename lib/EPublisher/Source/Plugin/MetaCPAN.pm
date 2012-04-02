@@ -46,9 +46,9 @@ sub load_source{
     # lib/Pod/Usage.pm     -- The Pod::Usage module source
     # lib/Pod/Checker.pm   -- The Pod::Checker module source
     # lib/Pod/Find.pm      -- The Pod::Find module source
-    my @pod_files = grep{ /^lib\/.*\.p(?:od|m)\s?/ # all the POD in ./lib/
-                          or
-                          /^[^\/]*\.p(?:od|m)\s?/  # all the POD in ./
+    my @pod_files = grep{ /^.*\.p(?:od|m)\s?/  # all POD everywhere
+                          and not
+                          /^(?:example\/|t\/)/ # but not in example/ or t/
                         }@files;
 
     # here whe store POD if we find some later on
@@ -63,7 +63,7 @@ sub load_source{
         # lib/Pod/Usage.pm     -- The Pod::Usage module source
         # lib/Pod/Checker.pm   -- The Pod::Checker module source
         # lib/Pod/Find.pm      -- The Pod::Find module source
-        if ( $file =~ m/^(lib\/.*\.p(?:od|m))\s/) {
+        if ( $file =~ m/^(.*\.p(?:od|m))\s/) {
             # throw away any comments!
             $file = $1;
         }
