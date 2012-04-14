@@ -1,6 +1,10 @@
 Changes for EPublisher::Source::Plugin::MetaCPAN
 ================================================
 
+0.12 2012-04-12
+    - some modules have different versions in main module and dist name
+      so we have to use an other field from MetaCPAN API
+
 0.11 2012-04-02
     - fixed a bug in POD detection. (POD without "=head" is ignored)
     - take possible comments in MANIFEST into account
