@@ -1,6 +1,9 @@
 Changes for EPublisher::Source::Plugin::MetaCPAN
 ================================================
 
+0.14 2012-04-14
+    - do not croak on errors, skip the files instead
+
 0.13 2012-04-14
     - add more debugging code
 

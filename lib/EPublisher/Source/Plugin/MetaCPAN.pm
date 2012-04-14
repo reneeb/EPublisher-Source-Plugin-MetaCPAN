@@ -14,7 +14,7 @@ use EPublisher::Utils::PPI qw(extract_pod_from_code);
 
 our @ISA = qw( EPublisher::Source::Base );
 
-our $VERSION = 0.13;
+our $VERSION = 0.14;
 
 # implementing the interface to EPublisher::Source::Base
 sub load_source{
@@ -68,10 +68,11 @@ sub load_source{
         # lib/Pod/Usage.pm     -- The Pod::Usage module source
         # lib/Pod/Checker.pm   -- The Pod::Checker module source
         # lib/Pod/Find.pm      -- The Pod::Find module source
-        if ( $file =~ m/^(.*\.p(?:od|m))\s/) {
-            # throw away any comments!
-            $file = $1;
-        }
+
+        my ($path) = split /\s/, $file;
+        next if $path !~ m{ \. (?:pod|pm|pl) \z }x;
+
+        $file = $path;
 
         # the call below ($mcpan->pod()) fails if there is no POD in a
         # module so this is why I filter all the modules. I check if they
@@ -82,22 +83,28 @@ sub load_source{
             path           => $file,
         );
 
-        $self->publisher->debug( "103: source of $file\n$source\n" );
+        $self->publisher->debug( "103: source of $file found" );
 
         # The Moose-Project made me write this filtering Regex, because
         # they have .pm's without POD, and also with nonsense POD which
         # still fails if you call $mcpan->pod
         my $pod_src;
-        if ($source =~ /\n=(HEAD|Head|head)\d+/) {
-            $pod_src = $mcpan->pod(
-                author         => $module_result->{author},
-                release        => $module_result->{name},
-                path           => $file,
-                'content-type' => 'text/x-pod',
-            );
-            $self->publisher->debug( "103: pod\n$pod_src" );
+        if ( $source =~ m{ ^=head[1234] }xim ) {
 
-            next if $pod_src eq '{}';
+            eval {
+                $pod_src = $mcpan->pod(
+                    author         => $module_result->{author},
+                    release        => $module_result->{name},
+                    path           => $file,
+                    'content-type' => 'text/x-pod',
+                );
+
+                $self->publisher->debug( "103: got pod" ) if $pod_src !~ m/ \A { /x;
+                1;
+            } or do{ $self->publisher->debug( $@ ); next; };
+
+            next if !$pod_src;
+            next if $pod_src =~ m!{ ( \s+ "message" \s : \s+ )? }!xms;
         }
         else {
             # if there is no head we consider this POD unvalid

@@ -10,8 +10,10 @@ use EPublisher::Source::Plugin::MetaCPAN;
 {
   package MockEPublisher;
 
+  use Test::More;
+
   sub new { return bless {}, shift }
-  sub debug { }
+  sub debug { diag $_[1] if $ENV{DIAG_EPUBLISHER} }
 }
 
 my $config = { module => 'EPublisher' };
