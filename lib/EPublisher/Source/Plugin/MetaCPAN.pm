@@ -1,5 +1,7 @@
 package EPublisher::Source::Plugin::MetaCPAN;
 
+# ABSTRACT: Get POD from distributions via MetaCPAN
+
 use strict;
 use warnings;
 
@@ -121,10 +123,6 @@ sub load_source{
 }
 
 1;
-
-=head1 NAME
-
-EPublisher::Source::Plugin::MetaCPAN - MetaCPAN source plugin
 
 =head1 SYNOPSIS
 
