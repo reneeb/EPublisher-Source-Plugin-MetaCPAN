@@ -7,8 +7,16 @@ use Test::More tests => 1;
 
 use EPublisher::Source::Plugin::MetaCPAN;
 
+{
+  package MockEPublisher;
+
+  sub new { return bless {}, shift }
+  sub debug { }
+}
+
 my $config = { module => 'EPublisher' };
 my $obj    = EPublisher::Source::Plugin::MetaCPAN->new( $config );
+$obj->publisher( MockEPublisher->new );
 
 my @pods   = $obj->load_source;
 

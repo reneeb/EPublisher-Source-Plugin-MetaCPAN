@@ -1,6 +1,9 @@
 Changes for EPublisher::Source::Plugin::MetaCPAN
 ================================================
 
+0.13 2012-04-14
+    - add more debugging code
+
 0.12 2012-04-12
     - some modules have different versions in main module and dist name
       so we have to use an other field from MetaCPAN API
