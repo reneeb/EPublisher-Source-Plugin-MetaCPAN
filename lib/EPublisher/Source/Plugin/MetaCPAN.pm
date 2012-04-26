@@ -14,7 +14,7 @@ use EPublisher::Utils::PPI qw(extract_pod_from_code);
 
 our @ISA = qw( EPublisher::Source::Base );
 
-our $VERSION = 0.14;
+our $VERSION = 0.15;
 
 # implementing the interface to EPublisher::Source::Base
 sub load_source{
@@ -29,9 +29,13 @@ sub load_source{
     my $module = $options->{module};    # the name of the CPAN-module
     my $mcpan  = MetaCPAN::API->new;
 
+    # metacpan does not handle ".pm" in dist names
+    my $release_name_metacpan = $module;
+    $release_name_metacpan    =~ s/\.pm\z//;
+
     # fetching the requested module from metacpan
-    $self->publisher->debug( "103: fetch release $module" );
-    my $module_result = $mcpan->fetch( 'release/' . $module );
+    $self->publisher->debug( "103: fetch release $module ($release_name_metacpan)" );
+    my $module_result = $mcpan->fetch( 'release/' . $release_name_metacpan );
     $self->publisher->debug( "103: fetch result: " . Dumper $module_result );
 
     # get the manifest with module-author and modulename-moduleversion
