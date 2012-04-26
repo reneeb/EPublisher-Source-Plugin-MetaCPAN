@@ -1,6 +1,9 @@
 Changes for EPublisher::Source::Plugin::MetaCPAN
 ================================================
 
+0.15 2012-04-26
+    - MetaCPAN does not handle ".pm" in release names, so we have to remove it
+
 0.14 2012-04-14
     - do not croak on errors, skip the files instead
 
