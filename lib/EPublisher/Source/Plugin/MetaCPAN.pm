@@ -6,6 +6,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
+use Encode;
 use File::Basename;
 use MetaCPAN::API;
 
@@ -14,7 +15,7 @@ use EPublisher::Utils::PPI qw(extract_pod_from_code);
 
 our @ISA = qw( EPublisher::Source::Base );
 
-our $VERSION = 0.15;
+our $VERSION = 0.16;
 
 # implementing the interface to EPublisher::Source::Base
 sub load_source{
@@ -110,6 +111,10 @@ sub load_source{
 
             next if !$pod_src;
             next if $pod_src =~ m!{ ( \s+ "message" \s : \s+ )? }!xms;
+
+            # metacpan always provides utf-8 encoded data, so we have to decode it
+            # otherwise the target plugins may produce garbage
+            $pod_src = decode( 'utf-8', $pod_src );
         }
         else {
             # if there is no head we consider this POD unvalid

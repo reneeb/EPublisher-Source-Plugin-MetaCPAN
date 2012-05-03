@@ -1,6 +1,10 @@
 Changes for EPublisher::Source::Plugin::MetaCPAN
 ================================================
 
+0.16 2012-05-03
+    - MetaCPAN encodes the response in utf-8, within EPublisher everything should
+      be in Perl's internal format, so we have to decode the Pod source
+
 0.15 2012-04-26
     - MetaCPAN does not handle ".pm" in release names, so we have to remove it
 
