@@ -123,13 +123,19 @@ sub load_source{
                     'content-type' => 'text/x-pod',
                 );
 
-                $self->publisher->debug( "103: got pod" ) if $pod_src !~ m/ \A { /x;
                 1;
             } or do{ $self->publisher->debug( $@ ); next; };
 
             if (!$pod_src) {
                 $self->publisher->debug( "103: empty pod handle" );
                 next;
+            }
+
+            if ( $pod_src =~ m/ \A ({.*) /x ) {
+                $self->publisher->debug( "103: error message: $1" );
+            }
+            else {
+                $self->publisher->debug( "103: got pod" );
             }
 
             # metacpan always provides utf-8 encoded data, so we have to decode it
