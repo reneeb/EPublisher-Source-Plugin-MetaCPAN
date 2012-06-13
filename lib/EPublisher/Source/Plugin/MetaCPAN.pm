@@ -159,7 +159,20 @@ sub load_source{
  
         my $info = { pod => $pod_src, filename => $filename, title => $title };
         push @pod, $info;
-        $self->publisher->debug( "103: passed info " . Dumper $info );
+
+        # make some nice debug output for what is in $info
+        my $pod_short;
+        if ($pod_src =~ m/(.{50})/s) {
+            $pod_short = $1 . '[...]';
+        }
+        else {
+            $pod_short = $pod_src;
+        }
+        $self->publisher->debug( "103: passed info: "
+                                . "filename => $filename, "
+                                . "title => $title, "
+                                . "pod => $pod_short"
+                               );
     }
 
     # voilà
