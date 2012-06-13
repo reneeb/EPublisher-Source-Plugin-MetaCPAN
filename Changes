@@ -1,6 +1,12 @@
 Changes for EPublisher::Source::Plugin::MetaCPAN
 ================================================
 
+0.18 2012-06-13
+    - removing regex which made problems (github issue 18)
+
+0.17 2012-05-10
+    - add possibility to just return one single module
+
 0.16 2012-05-03
     - MetaCPAN encodes the response in utf-8, within EPublisher everything should
       be in Perl's internal format, so we have to decode the Pod source
