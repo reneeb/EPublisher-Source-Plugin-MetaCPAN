@@ -127,12 +127,15 @@ sub load_source{
                 1;
             } or do{ $self->publisher->debug( $@ ); next; };
 
-            next if !$pod_src;
-            next if $pod_src =~ m!{ ( \s+ "message" \s : \s+ )? }!xms;
+            if (!$pod_src) {
+                $self->publisher->debug( "103: empty pod handle" );
+                next;
+            }
 
             # metacpan always provides utf-8 encoded data, so we have to decode it
             # otherwise the target plugins may produce garbage
             $pod_src = decode( 'utf-8', $pod_src );
+
         }
         else {
             # if there is no head we consider this POD unvalid
@@ -152,7 +155,7 @@ sub load_source{
         push @pod, $info;
         $self->publisher->debug( "103: passed info " . Dumper $info );
     }
-    
+
     # voilà
     return @pod;
 }
