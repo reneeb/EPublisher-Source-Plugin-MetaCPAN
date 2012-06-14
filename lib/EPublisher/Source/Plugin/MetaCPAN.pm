@@ -39,7 +39,7 @@ sub load_source{
     $self->publisher->debug( "103: fetch release $module ($release_name_metacpan)" );
 
     # if just the one and only POD from the modules name and not the entire
-    # release is wanted, we just fetch ist and return
+    # release is wanted, we just fetch it and return
     if ($dont_merge_release) {
 
         my $result = $mcpan->pod(  module        => $release_name_metacpan,
@@ -54,8 +54,24 @@ sub load_source{
     }
     # ELSE we go on and build the entire release...
 
-    my $module_result = $mcpan->fetch( 'release/' . $release_name_metacpan );
-    $self->publisher->debug( "103: fetch result: " . Dumper $module_result );
+    # if there is a wrong module-name we write a debug-message and return
+    # an empty array
+    my $module_result;
+    eval {
+        $module_result =
+            $mcpan->fetch( 'release/' . $release_name_metacpan );
+    } or do {
+        $self->publisher->debug(
+            "103: release $release_name_metacpan does not exist"
+        );
+        return;
+    };
+
+    # if we reached here the module-call was probably fine...
+    # so we print out what we have got
+    $self->publisher->debug( "103: fetch result: "
+                            . Dumper $module_result
+                           );
 
     # get the manifest with module-author and modulename-moduleversion
     $self->publisher->debug( '103: get MANIFEST' );
