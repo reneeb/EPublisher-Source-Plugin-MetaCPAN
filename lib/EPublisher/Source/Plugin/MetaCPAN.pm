@@ -147,7 +147,7 @@ sub load_source{
                 next;
             }
 
-            if ( $pod_src =~ m/ \A ({.*) /x ) {
+            if ( $pod_src =~ m/ \A ({.*) /xs ) {
                 $self->publisher->debug( "103: error message: $1" );
             }
             else {
