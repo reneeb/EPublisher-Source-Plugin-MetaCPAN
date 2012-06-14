@@ -1,6 +1,11 @@
 Changes for EPublisher::Source::Plugin::MetaCPAN
 ================================================
 
+0.19 2012-06-14
+    - added test for inexistant module names
+    - handling of inexistant module names
+    - more details in error output
+
 0.18 2012-06-13
     - removing regex which made problems (github issue 18)
 
