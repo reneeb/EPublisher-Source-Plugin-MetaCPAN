@@ -15,7 +15,7 @@ use EPublisher::Utils::PPI qw(extract_pod_from_code);
 
 our @ISA = qw( EPublisher::Source::Base );
 
-our $VERSION = 0.20;
+our $VERSION = 0.21;
 
 # implementing the interface to EPublisher::Source::Base
 sub load_source{
@@ -197,6 +197,10 @@ sub load_source{
 }
 
 1;
+
+__END__
+
+=encoding utf8
 
 =head1 SYNOPSIS
 
