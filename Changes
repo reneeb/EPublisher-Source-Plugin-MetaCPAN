@@ -1,7 +1,7 @@
 Changes for EPublisher::Source::Plugin::MetaCPAN
 ================================================
 
-0.21 2012-11-30
+0.22 2012-11-30
     - added POD encoding due to testfail on CpanTesters
 
 0.20 2012-06-14
