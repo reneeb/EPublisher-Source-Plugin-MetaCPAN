@@ -15,7 +15,7 @@ use EPublisher::Utils::PPI qw(extract_pod_from_code);
 
 our @ISA = qw( EPublisher::Source::Base );
 
-our $VERSION = 0.22;
+our $VERSION = 0.23;
 
 # implementing the interface to EPublisher::Source::Base
 sub load_source{
@@ -42,10 +42,20 @@ sub load_source{
     # release is wanted, we just fetch it and return
     if ($dont_merge_release) {
 
-        my $result = $mcpan->pod(
-            module         => $release_name_metacpan,
-            'content-type' => 'text/x-pod',
-        );
+        my $result;
+
+        eval {
+            $result = $mcpan->pod(
+                module         => $release_name_metacpan,
+                'content-type' => 'text/x-pod',
+            );
+            1;
+        } or do {
+            $self->publisher->debug(
+                "103: Can't retrieve pod for $release_name_metacpan"
+            );
+            return;
+        };
 
         my @pod = ();
         my $info = { pod => $result, filename => '', title => $module };
@@ -62,6 +72,7 @@ sub load_source{
     eval {
         $module_result =
             $mcpan->fetch( 'release/' . $release_name_metacpan );
+        1;
     } or do {
         $self->publisher->debug(
             "103: release $release_name_metacpan does not exist"
@@ -77,14 +88,25 @@ sub load_source{
 
     # get the manifest with module-author and modulename-moduleversion
     $self->publisher->debug( '103: get MANIFEST' );
-    my $manifest = $mcpan->source(
-        author  => $module_result->{author},
-        release => $module_result->{name},
-        path    => 'MANIFEST',
-    );
+    my $manifest;
+    eval {
+        $manifest = $mcpan->source(
+            author  => $module_result->{author},
+            release => $module_result->{name},
+            path    => 'MANIFEST',
+        );
+    } or do {
+        $self->publisher->debug(
+            "103: Cannot get MANIFEST",
+        );
+        return;
+    };
 
     # make a list from all possible POD-files in the lib directory
     my @files     = split /\n/, $manifest;
+
+    #$self->publisher->debug( "103: files from manifest: " . join ', ', @files );
+
     # some MANIFESTS (like POD::Parser) have comments after the filenames,
     # so we match against an optional \s instead of \z
     # the manifest, in POD::Parser in looks e.g. like this:
@@ -95,7 +117,7 @@ sub load_source{
     my @pod_files = grep{
         /^.*\.p(?:od|m|l)(?:\s|$)/  # all POD everywhere
         and not
-        /^(?:example\/|x?t\/)/ # but not in example/ or t/ or xt/
+        /^(?:example\/|x?t\/|inc\/)/ # but not in example/ or t/ or xt/ or inc/
     }@files;
 
     # especially in App::* dists the most important documentation
@@ -103,7 +125,7 @@ sub load_source{
     push @pod_files, grep {
         /^bin\//
         and not
-        /^.*?\.p(?:od|m|l)(?:\s|$)/;
+        /^.*\.p(?:od|m|l)(?:\s|$)/
     }@files;
 
     # here whe store POD if we find some later on
@@ -120,18 +142,27 @@ sub load_source{
         # lib/Pod/Find.pm      -- The Pod::Find module source
 
         my ($path) = split /\s/, $file;
-        next if $path !~ m{ \. (?:pod|pm|pl) \z }x;
+        next if $path !~ m{ \. p(?:od|m|l) \z }x && $path !~ m{ \A bin/ }x;
 
         $file = $path;
 
         # the call below ($mcpan->pod()) fails if there is no POD in a
         # module so this is why I filter all the modules. I check if they
         # have any line BEGINNING with '=head1' ore similar
-        my $source = $mcpan->source(
-            author  => $module_result->{author},
-            release => $module_result->{name},
-            path    => $file,
-        );
+        my $source;
+        eval {
+            $source = $mcpan->source(
+                author  => $module_result->{author},
+                release => $module_result->{name},
+                path    => $file,
+            );
+            1;
+        } or do {
+            $self->publisher->debug(
+                "103: Cannot get source for $file",
+            );
+            return;
+        };
 
         $self->publisher->debug( "103: source of $file found" );
 
@@ -218,6 +249,18 @@ __END__
   my $source_options = { type => 'MetaCPAN', module => 'Moose' };
   my $url_source     = EPublisher::Source->new( $source_options );
   my @pod            = $url_source->load_source;
+
+=head1 OPTIONS
+
+Those options can be passed to this plugin:
+
+=over 4
+
+=item * module
+
+=item * onlythis
+
+=back
 
 =head1 METHODS
 
