@@ -42,9 +42,11 @@ sub load_source{
     # release is wanted, we just fetch it and return
     if ($dont_merge_release) {
 
-        my $result = $mcpan->pod(  module        => $release_name_metacpan,
-                                  'content-type' => 'text/x-pod',
-                                );
+        my $result = $mcpan->pod(
+            module         => $release_name_metacpan,
+            'content-type' => 'text/x-pod',
+        );
+
         my @pod = ();
         my $info = { pod => $result, filename => '', title => $module };
         push (@pod, $info);
@@ -69,9 +71,9 @@ sub load_source{
 
     # if we reached here the module-call was probably fine...
     # so we print out what we have got
-    $self->publisher->debug( "103: fetch result: "
-                            . Dumper $module_result
-                           );
+    $self->publisher->debug(
+        "103: fetch result: " . Dumper $module_result
+    );
 
     # get the manifest with module-author and modulename-moduleversion
     $self->publisher->debug( '103: get MANIFEST' );
@@ -118,9 +120,9 @@ sub load_source{
         # module so this is why I filter all the modules. I check if they
         # have any line BEGINNING with '=head1' ore similar
         my $source = $mcpan->source(
-            author         => $module_result->{author},
-            release        => $module_result->{name},
-            path           => $file,
+            author  => $module_result->{author},
+            release => $module_result->{name},
+            path    => $file,
         );
 
         $self->publisher->debug( "103: source of $file found" );
@@ -185,14 +187,15 @@ sub load_source{
         else {
             $pod_short = $pod_src;
         }
-        $self->publisher->debug( "103: passed info: "
-                                . "filename => $filename, "
-                                . "title => $title, "
-                                . "pod => $pod_short"
-                               );
+        $self->publisher->debug(
+            "103: passed info: "
+                . "filename => $filename, "
+                . "title => $title, "
+                . "pod => $pod_short"
+        );
     }
 
-    # voilà
+    # voila
     return @pod;
 }
 
