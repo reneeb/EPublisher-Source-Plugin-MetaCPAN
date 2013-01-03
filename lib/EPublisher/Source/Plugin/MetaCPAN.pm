@@ -95,7 +95,7 @@ sub load_source{
     my @pod_files = grep{
         /^.*\.p(?:od|m)\s?/  # all POD everywhere
         and not
-        /^(?:example\/|t\/)/ # but not in example/ or t/
+        /^(?:example\/|x?t\/)/ # but not in example/ or t/ or xt/
     }@files;
 
     # here whe store POD if we find some later on
