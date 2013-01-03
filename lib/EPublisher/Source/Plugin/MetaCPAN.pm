@@ -180,8 +180,8 @@ sub load_source{
         my $filename = basename $file;
         my $title    = $file;
 
-        $title =~ s{lib/}{};
-        $title =~ s{\.p(?:m|od)\z}{};
+        $title =~ s{^(?:lib|bin)/}{};
+        $title =~ s{\.p(?:m|od|l)\z}{};
         $title =~ s{/}{::}g;
  
         my $info = { pod => $pod_src, filename => $filename, title => $title };
@@ -217,14 +217,49 @@ __END__
 
   my $source_options = { type => 'MetaCPAN', module => 'Moose' };
   my $url_source     = EPublisher::Source->new( $source_options );
-  my $pod            = $url_source->load_source;
+  my @pod            = $url_source->load_source;
 
 =head1 METHODS
 
 =head2 load_source
 
-  $url_source->load_source;
+  my @pod = $url_source->load_source;
 
-reads the URL 
+returns a list of documentation for the given distribution. Each element
+of the list is a hashref that looks like
+
+  {
+      pod      => '=head1 EPublisher...',
+      filename => 'Epublisher.pm',
+      title    => 'EPublisher,
+  }
+
+Where 
+
+=over 4
+
+=item * pod
+
+Complete POD documentation extracted from the file
+
+=item * filename
+
+Basename of the file where the documentation was found
+
+=item * title
+
+Full path of the file with some substitutions:
+
+=over 4
+
+=item * removed leading "bin/" or "lib/"
+
+=item * removed file suffix (".pm", ".pl", ".pod")
+
+=item * replaced "/" with "::"
+
+=back
+
+=back
 
 =cut
