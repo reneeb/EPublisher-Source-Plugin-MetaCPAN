@@ -98,6 +98,14 @@ sub load_source{
         /^(?:example\/|x?t\/)/ # but not in example/ or t/ or xt/
     }@files;
 
+    # especially in App::* dists the most important documentation
+    # is often in the scripts
+    push @pod_files, grep {
+        /^bin\//
+        and not
+        /^.*?\.p(?:od|m|l)(\s|$)/;
+    }@files;
+
     # here whe store POD if we find some later on
     my @pod;
 
