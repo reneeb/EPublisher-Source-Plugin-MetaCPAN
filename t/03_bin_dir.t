@@ -29,7 +29,7 @@ my @pod            = $url_source->load_source;
 
 SKIP: {
     skip 'cannot get documentation from MetaCPAN', 1 if $pub->error =~ m{103: \s release .*? does not exist}xms;
-    ok( ( grep{ $_->{title} eq 'starman' }@pod ), 'starman documentation is included' );
+    ok( ( grep{ $_->{title} =~ m{starman}xmsi }@pod ), 'starman documentation is included' );
 }
 
 #diag $pub->error;
