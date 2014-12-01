@@ -305,4 +305,15 @@ Full path of the file with some substitutions:
 
 =back
 
+=head1 CONTRIBUTORS
+
+These people contributed to C<EPublisher::Source::Plugin::MetaCPAN> and made it
+a better module:
+
+=over 4
+
+=item * Stefan Limbacher (stelim)
+
+=back
+
 =cut
