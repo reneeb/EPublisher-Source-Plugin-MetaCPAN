@@ -1,6 +1,16 @@
 Changes for EPublisher::Source::Plugin::MetaCPAN
 ================================================
 
+0.24 2014-12-02
+    - added contributors section in documentation
+    - fix 03_bin_dir.t: Title of starman documentation
+    - added info about resources: links to github account
+
+0.23 2013-01-03
+    - added more debugging stuff
+    - use eval {} to catch errors
+    - do not include files in inc/
+
 0.22 2012-11-30
     - added POD encoding due to testfail on CpanTesters
 
