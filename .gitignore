@@ -1,3 +1,4 @@
 *.swp
+EPublisher-Source-Plugin-MetaCPAN-*
 .build/*
 
